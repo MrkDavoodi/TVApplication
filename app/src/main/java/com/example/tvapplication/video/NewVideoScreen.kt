@@ -53,7 +53,7 @@ fun VideoList(videos: List<Video>) {
 @Composable
 fun VideoItemNew(context: Context, video: MediaItem,mediaList :List<MediaItem> ) {
 
-    val exoPlayer = remember { ExoPlayer.Builder(context).build() }
+    val exoPlayer = remember { ExoPlayer.Builder(context).build().apply {  }  }
     exoPlayer.setMediaItems(mediaList)
     exoPlayer.playWhenReady = true
     exoPlayer.prepare()

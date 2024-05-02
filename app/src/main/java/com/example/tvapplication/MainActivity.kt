@@ -33,10 +33,16 @@ class MainActivity : ComponentActivity() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
-
+    val inputKeys: MutableList<Int?> = mutableListOf()
+    val secretKey = listOf(
+        KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,
+        KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4
+    )
     @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        inputKeys.add(event?.keyCode)
         return super.dispatchKeyEvent(event)
+
 
     }
 
