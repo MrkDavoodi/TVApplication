@@ -1,6 +1,5 @@
 package com.example.tvapplication
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -21,7 +20,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
-import com.example.tvapplication.ui.home.HomeScreen
+import com.example.tvapplication.forTest.ExoPlayerColumnAutoplayScreen
+import com.example.tvapplication.time.startAlarmManager
 import com.example.tvapplication.ui.theme.TVApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,22 +33,31 @@ class MainActivity : ComponentActivity() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
-    val inputKeys: MutableList<Int?> = mutableListOf()
-    val secretKey = listOf(
+
+    private val inputKeys= arrayListOf<Int?>()
+    private val secretKey = listOf(
         KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,
         KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4
     )
-    @SuppressLint("RestrictedApi")
-    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-        inputKeys.add(event?.keyCode)
-        return super.dispatchKeyEvent(event)
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        inputKeys.add(keyCode)
+//        Toast.makeText(this,secretKey[0].toString()+" \n"+
+//                secretKey[1].toString()+" \n"+
+//                secretKey[2].toString()+" \n"+
+//                secretKey[3].toString()+" \n",Toast.LENGTH_LONG).show()
+        if (inputKeys == secretKey) {
+            finish()
+        }
 
+        return super.onKeyDown(keyCode, event)
     }
 
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startAlarmManager(this)
+
         setContent {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 TVApplicationTheme {
@@ -56,7 +65,9 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         shape = RectangleShape
                     ) {
-                        HomeScreen()
+
+                        ExoPlayerColumnAutoplayScreen()
+//                        HomeScreen()
 //                        VideoScreen(onVideoPressed = {
 ////                             Navigate to the video detail screen when a video is pressed
 ////                        navController.navigate("${NavigationItem.VideoDetail.route}/${it.videoResultEntity.id}")
@@ -88,7 +99,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 
 @Preview(showBackground = true)
