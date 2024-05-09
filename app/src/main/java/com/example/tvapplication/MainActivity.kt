@@ -21,7 +21,6 @@ import androidx.core.view.WindowCompat
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
 import com.example.tvapplication.forTest.ExoPlayerColumnAutoplayScreen
-import com.example.tvapplication.time.startAlarmManager
 import com.example.tvapplication.ui.theme.TVApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,10 +41,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         inputKeys.add(keyCode)
-//        Toast.makeText(this,secretKey[0].toString()+" \n"+
-//                secretKey[1].toString()+" \n"+
-//                secretKey[2].toString()+" \n"+
-//                secretKey[3].toString()+" \n",Toast.LENGTH_LONG).show()
         if (inputKeys == secretKey) {
             finish()
         }
@@ -56,7 +51,6 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startAlarmManager(this)
 
         setContent {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -65,14 +59,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         shape = RectangleShape
                     ) {
-
                         ExoPlayerColumnAutoplayScreen()
-//                        HomeScreen()
-//                        VideoScreen(onVideoPressed = {
-////                             Navigate to the video detail screen when a video is pressed
-////                        navController.navigate("${NavigationItem.VideoDetail.route}/${it.videoResultEntity.id}")
-//                        }
-//                    )
                     }
                 }
             }

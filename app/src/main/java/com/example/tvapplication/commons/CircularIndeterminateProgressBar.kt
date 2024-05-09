@@ -20,7 +20,7 @@ fun CircularIndeterminateProgressBar(isDisplayed: Boolean) {
             verticalArrangement = Arrangement.Center//.background(Color.Black.copy(alpha = 0.5f)),
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(45.dp),
+                modifier = Modifier.size(80.dp),
                 color = Blue
             )
         }

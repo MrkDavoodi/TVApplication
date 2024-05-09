@@ -41,12 +41,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.example.tvapplication.commons.LottieAnimationScreen
+import com.example.tvapplication.commons.CircularIndeterminateProgressBar
 import com.example.tvapplication.commons.internet.ConnectionState
 import com.example.tvapplication.commons.internet.connectivityState
 import com.example.tvapplication.commons.internet.saveFileData
 import com.example.tvapplication.commons.swapList
 import com.example.tvapplication.data.local.SharedPreferencesHelper
+import com.example.tvapplication.time.setUpLaunchAndExitApp
 import com.example.tvapplication.ui.home.VideoViewModel
 import com.example.tvapplication.ui.internet.NoConnectionScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,11 +70,17 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
     val items = remember { mutableStateListOf<VideoItem>() }
     var playingVideoItem by remember { mutableStateOf(items.firstOrNull()) }
     var isPlaying by remember {mutableStateOf(true)}
-//    startAlarmManager(context)
+
+
+//    ScheduleOnTime(context)
+//    startOFFTimeAlarmManager(context)
+    setUpLaunchAndExitApp(context)
 
     val connection by connectivityState()
     val isConnected = connection === ConnectionState.Available
     val localList = getListFiles(context)
+    CircularIndeterminateProgressBar(isPlaying)
+
     if (isConnected) {
 //        mainService {
         viewModel.getVersion()
@@ -114,7 +121,7 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
 
                         items.swapList(videoList)
                     }
-                    isPlaying=false
+//                    isPlaying=false
 
                 } else {
                     localList.forEach {
@@ -204,7 +211,6 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
         }
     }
 
-    LottieAnimationScreen(isPlaying)
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
