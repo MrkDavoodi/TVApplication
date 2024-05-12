@@ -1,6 +1,6 @@
 package com.example.tvapplication.repository
 
-import com.example.tvapplication.model.VsersionModel
+import com.example.tvapplication.model.version.VsersionModel
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 

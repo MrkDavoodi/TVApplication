@@ -1,4 +1,4 @@
-package com.example.tvapplication.forTest
+package com.example.tvapplication.model.video
 
 data class VideoItem(
     val id: String,

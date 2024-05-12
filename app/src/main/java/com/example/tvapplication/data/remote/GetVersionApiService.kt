@@ -1,7 +1,7 @@
 package com.example.tvapplication.data.remote
 
 import com.example.tvapplication.data.ApiURL.URL_VERSION
-import com.example.tvapplication.model.VsersionModel
+import com.example.tvapplication.model.version.VsersionModel
 import retrofit2.Response
 import retrofit2.http.GET
 

@@ -1,4 +1,4 @@
-package com.example.tvapplication.model
+package com.example.tvapplication.model.version
 
 import com.google.gson.annotations.SerializedName
 

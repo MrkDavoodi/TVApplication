@@ -1,8 +1,8 @@
-package com.example.tvapplication.model
+package com.example.tvapplication.model.version
 
 import com.google.gson.annotations.SerializedName
 
-data class OffTime1(
+data class OnTime(
     @SerializedName("hour")
     val hour: String,
     @SerializedName("minute")

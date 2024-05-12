@@ -1,7 +1,7 @@
 package com.example.tvapplication.repository
 
 import com.example.tvapplication.data.remote.GetVersionApiService
-import com.example.tvapplication.model.VsersionModel
+import com.example.tvapplication.model.version.VsersionModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

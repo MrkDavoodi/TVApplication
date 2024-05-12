@@ -14,26 +14,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
-import com.example.tvapplication.forTest.ExoPlayerColumnAutoplayScreen
 import com.example.tvapplication.ui.theme.TVApplicationTheme
+import com.example.tvapplication.ui.video.ExoPlayerColumnAutoplayScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     companion object {
         init {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
-    private val inputKeys= arrayListOf<Int?>()
+    private val inputKeys = arrayListOf<Int?>()
     private val secretKey = listOf(
         KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,
         KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4
@@ -51,8 +51,8 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
+            val context= LocalContext.current
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 TVApplicationTheme {
                     Surface(
