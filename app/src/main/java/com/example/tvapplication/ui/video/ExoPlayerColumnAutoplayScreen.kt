@@ -56,7 +56,6 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
     val isConnected = connection === ConnectionState.Available
     val localList = viewModel.getListFiles(context)
 
-
     if (isConnected) {
 //        mainService {
         viewModel.getVersion()

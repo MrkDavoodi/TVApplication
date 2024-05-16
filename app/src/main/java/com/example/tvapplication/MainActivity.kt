@@ -1,7 +1,13 @@
 package com.example.tvapplication
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
+import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -21,12 +27,15 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
+import com.example.tvapplication.time.AlarmReceiver
 import com.example.tvapplication.ui.theme.TVApplicationTheme
 import com.example.tvapplication.ui.video.ExoPlayerColumnAutoplayScreen
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     companion object {
         init {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -48,17 +57,56 @@ class MainActivity : ComponentActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun onStart() {
+        super.onStart()
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    }
+
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            val context= LocalContext.current
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 TVApplicationTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         shape = RectangleShape
                     ) {
+                        val context = LocalContext.current
+                        Log.i("IN MainActivity","There is AlarmReceiver IN MAin!!! $context")
+
+                        val alarm = Intent(
+                            context,
+                            AlarmReceiver::class.java
+                        )
+                        val alarmRunning = PendingIntent.getBroadcast(
+                            context,
+                            0,
+                            alarm,
+                            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+                        ) != null
+                        if (!alarmRunning) {
+                            val pendingIntent = PendingIntent.getBroadcast(context, 5425, alarm, 0)
+                            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                                alarmManager.setAndAllowWhileIdle(
+//                                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
+//                                    60000,
+//                                    pendingIntent
+//                                )
+//                            }
+                            alarmManager.setRepeating(
+                                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                                SystemClock.elapsedRealtime(),
+                                60000,
+                                pendingIntent
+                            )
+                        }
+
+
+
+
                         ExoPlayerColumnAutoplayScreen()
                     }
                 }
