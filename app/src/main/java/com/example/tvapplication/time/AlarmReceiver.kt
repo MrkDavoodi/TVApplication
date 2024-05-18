@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.example.tvapplication.MainActivity
 
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -15,10 +14,15 @@ class AlarmReceiver : BroadcastReceiver() {
         Log.i("IN AlarmReceiver","There is AlarmReceiver!!! $context")
 //        context!!.startService(background)
 
-        val i = Intent(context, MainActivity::class.java)
-//        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context?.startActivity(i)
+        if (intent?.action == "android.intent.action.BOOT_COMPLETED") {
+            val appPackage = "com.example.tvapplication" // Replace with your app's package name
+            val mainActivityClass = "com.example.tvapplication.MainActivity" // Replace with your app's main activity class
+
+            val launchIntent = Intent(Intent.ACTION_MAIN)
+            launchIntent.setClassName(appPackage, mainActivityClass)
+            launchIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context?.startActivity(launchIntent)
+        }
 
     }
 }

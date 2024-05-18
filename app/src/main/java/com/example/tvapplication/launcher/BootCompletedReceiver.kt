@@ -1,10 +1,12 @@
 package com.example.tvapplication.launcher
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -13,19 +15,54 @@ import java.util.Calendar
 
 
 class BootCompletedReceiver : BroadcastReceiver() {
+    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {
-
-        val message = "Hellooo, alrm worked ----"
+        val message = "Hellooo, alrm worked ---- context is :$context"
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        val intent2 = Intent(context, MainActivity::class.java)
-        intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context?.startActivity(intent2)
 
-//         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
-//            val i = Intent(context, MainActivity::class.java)
-//            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//            context?.startActivity(i)}
-//
+
+//        if (intent?.action == "android.intent.action.BOOT_COMPLETED") {
+            val appPackage = "com.example.tvapplication.MainActivity" // Replace with your app's package name
+            val mainActivityClass = "MainActivity" // Replace with your app's main activity class
+try {
+        val intent1 = Intent(context, MainActivity::class.java)
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context?.startActivity(intent1)
+        Log.i("In Receiver","This is context : $context")
+
+
+}catch (e:Exception){
+    Log.i("In Receiver","This is error ${e.message}")
+
+        val launchIntent = Intent(Intent.ACTION_MAIN)
+        launchIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+
+        val packageManager = context?.packageManager
+        val resolveInfo = packageManager?.resolveActivity(launchIntent, PackageManager.GET_ACTIVITIES)
+
+        if (resolveInfo != null) {
+            val appPackage = resolveInfo.activityInfo.packageName
+            val mainActivityClass = resolveInfo.activityInfo.name
+
+            val newLaunchIntent = Intent(Intent.ACTION_MAIN)
+            newLaunchIntent.setClassName(appPackage, mainActivityClass)
+            newLaunchIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(newLaunchIntent)
+            Log.i("In Receiver","This is pkg : $appPackage")
+        } else {
+            Log.i("In Receiver","This is error ${e.message}")
+            // Handle case where no activity is resolved
+        }
+}
+
+
+
+
+
+
+
+//        }
+
 //        if (intent?.action == "EXIT_APP_ACTION") {
 //            // Close all activities in the app
 //            Toast.makeText(context, "Action: " + intent.action, Toast.LENGTH_SHORT).show()

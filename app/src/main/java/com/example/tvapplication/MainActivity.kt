@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowInsets
@@ -27,10 +26,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
-import com.example.tvapplication.time.AlarmReceiver
+import com.example.tvapplication.launcher.BootCompletedReceiver
 import com.example.tvapplication.ui.theme.TVApplicationTheme
 import com.example.tvapplication.ui.video.ExoPlayerColumnAutoplayScreen
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Calendar
 
 
 @AndroidEntryPoint
@@ -74,20 +74,21 @@ class MainActivity : ComponentActivity() {
                         shape = RectangleShape
                     ) {
                         val context = LocalContext.current
-                        Log.i("IN MainActivity","There is AlarmReceiver IN MAin!!! $context")
+                        Log.i("IN MainActivity", "There is AlarmReceiver IN MAin!!! $context")
 
                         val alarm = Intent(
                             context,
-                            AlarmReceiver::class.java
+                            BootCompletedReceiver::class.java
                         )
+
                         val alarmRunning = PendingIntent.getBroadcast(
                             context,
-                            0,
+                            1234,
                             alarm,
                             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
                         ) != null
-                        if (!alarmRunning) {
-                            val pendingIntent = PendingIntent.getBroadcast(context, 5425, alarm, 0)
+//                        if (!alarmRunning) {
+                            val pendingIntent = PendingIntent.getBroadcast(context, 1234, alarm, 0)
                             val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
 //                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //                                alarmManager.setAndAllowWhileIdle(
@@ -96,13 +97,32 @@ class MainActivity : ComponentActivity() {
 //                                    pendingIntent
 //                                )
 //                            }
-                            alarmManager.setRepeating(
-                                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                                SystemClock.elapsedRealtime(),
-                                60000,
+                            val calendar = Calendar.getInstance().apply {
+                                set(Calendar.HOUR_OF_DAY, 13)
+                                set(Calendar.MINUTE, 50)
+                                set(Calendar.SECOND, 0)
+                                set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
+
+                            }
+                            val time = System.currentTimeMillis()
+//                        alarmManager.cancel(pendingIntent)
+//                            alarmManager.setRepeating(    AlarmManager.RTC_WAKEUP,
+//                                System.currentTimeMillis(),
+//                                60000,
+//                                pendingIntent)
+                            alarmManager.set(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.timeInMillis,
                                 pendingIntent
                             )
-                        }
+
+//                            alarmManager.setRepeating(
+//                                AlarmManager.RTC_WAKEUP,
+//                                System.currentTimeMillis(),
+//                                60000,
+//                                pendingIntent
+//                            )
+//                        }
 
 
 
