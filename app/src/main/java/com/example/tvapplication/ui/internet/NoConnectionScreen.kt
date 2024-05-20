@@ -28,7 +28,7 @@ fun NoConnectionScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.mipmap.no_internet_connection),
+            painter = painterResource(id = R.drawable.no_internet_connection),
             contentDescription = "",
             contentScale = ContentScale.Crop,
             modifier = Modifier

@@ -3,7 +3,6 @@ package com.example.tvapplication.ui.video
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,6 +63,8 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
         if (versionDetails != null) {
             val oldVersionWeb = SharedPreferencesHelper.getVersionNumber(context)
             val newVersionWeb = versionDetails?.Ver
+
+
             if (newVersionWeb != null) {
                 if (localList.isEmpty() || oldVersionWeb.toDouble() < newVersionWeb.toDouble()) {
                     SharedPreferencesHelper.saveVersionNumber(
@@ -185,8 +185,7 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
 
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.Black),
+            .fillMaxSize(),
         state = listState
     ) {
         items(items.size) { index ->
