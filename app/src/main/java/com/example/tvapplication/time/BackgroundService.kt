@@ -4,7 +4,8 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import com.example.tvapplication.MainActivity
+import android.util.Log
+import com.example.tvapplication.util.executeCommand
 
 
 class BackgroundService : Service() {
@@ -22,9 +23,8 @@ class BackgroundService : Service() {
 
     private val myTask = Runnable {
         // Do something here
-        val i = Intent(applicationContext, MainActivity::class.java)
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        applicationContext?.startActivity(i)
+        executeCommand("cmd activity start com.example.tvapplication")
+        Log.i("in Receiver","test for command")
         stopSelf()
     }
 

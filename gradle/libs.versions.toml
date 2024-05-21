@@ -9,6 +9,7 @@ appcompat = "1.6.1"
 composeBom = "2023.08.00"
 kotlinxCoroutinesAndroid = " 1.8.0-RC"
 kotlinxCoroutinesCore = "1.8.0-RC"
+kscriptTools = "1.0.2"
 lifecycleVersion = "2.7.0"
 lottieVersion = "4.0.0"
 mediaVersion = "1.2.0"
@@ -46,6 +47,7 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltA
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kscript-tools = { module = "com.sealwu:kscript-tools", version.ref = "kscriptTools" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }

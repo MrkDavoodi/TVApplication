@@ -52,16 +52,16 @@ class MainActivity : ComponentActivity() {
         KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4
     )
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        inputKeys.add(keyCode)
-        if (inputKeys == secretKey) {
-            finish()
-        }else{
-            return false
-        }
-
-        return super.onKeyDown(keyCode, event)
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        inputKeys.add(keyCode)
+//        if (inputKeys == secretKey) {
+//            finish()
+//        }else{
+//            return false
+//        }
+//
+//        return super.onKeyDown(keyCode, event)
+//    }
 
 //    @Deprecated("Deprecated in Java",
 //        ReplaceWith("super.onBackPressed()", "androidx.activity.ComponentActivity")
@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-//        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
     }
 
