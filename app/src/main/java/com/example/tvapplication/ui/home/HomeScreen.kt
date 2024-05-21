@@ -36,6 +36,7 @@ fun HomeScreen(navController: NavController, viewModel: VideoViewModel = hiltVie
     val time=System.currentTimeMillis()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         alarmManager?.set(AlarmManager.RTC_WAKEUP,60000,pendingIntent)
+
     }
 //    alarmManager!!.setRepeating(
 //        AlarmManager.RTC_WAKEUP,
