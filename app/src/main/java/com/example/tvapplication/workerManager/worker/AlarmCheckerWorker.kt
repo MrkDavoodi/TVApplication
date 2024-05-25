@@ -14,6 +14,7 @@ class AlarmCheckerWorker (
 ) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result {
+        val isTurnOf =  inputData.getBoolean("isTurnOf",false)
         return try {
             val i = Intent(applicationContext, MainActivity::class.java)
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

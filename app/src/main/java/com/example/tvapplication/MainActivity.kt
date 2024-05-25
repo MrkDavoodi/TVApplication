@@ -1,8 +1,11 @@
 package com.example.tvapplication
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.KeyEvent
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -71,7 +74,6 @@ class MainActivity : ComponentActivity() {
 //    }
 
 
-
     fun manageScreenSaver() {
 
         screenSaverJob?.cancel()
@@ -105,9 +107,21 @@ class MainActivity : ComponentActivity() {
                         val navigation = remember {
                             Navigation(navController)
                         }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                            if (!Settings.canDrawOverlays(context)) {
+                                val intent = Intent(
+                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:$packageName")
+                                )
+                                val requestCode = 123
+
+                                startActivityForResult(intent, requestCode)
+                            }
+
                         CompositionLocalProvider(LocalNavigation provides navigation) {
-                            MainGraph(navController)
+                            MainGraph(navController, this@MainActivity)
                         }
+
                     }
                 }
             }
@@ -134,7 +148,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

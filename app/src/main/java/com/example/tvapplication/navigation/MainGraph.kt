@@ -1,5 +1,6 @@
 package com.example.tvapplication.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,13 +11,13 @@ import com.example.tvapplication.ui.video.ExoPlayerColumnAutoplayScreen
 
 @Composable
 fun MainGraph(
-    navHostController: NavHostController
+    navHostController: NavHostController,context: Context
 ) {
 
     NavHost(navController = navHostController, startDestination = Route.Home.routeArg) {
 
         composable(route = Route.Home.routeArg) {
-            HomeScreen(navController = navHostController)
+            HomeScreen(navController = navHostController, context = context)
         }
         composable(route = Route.ExoPlayerColumnAutoplay.routeArg) {
             ExoPlayerColumnAutoplayScreen()

@@ -1,58 +1,91 @@
 package com.example.tvapplication.ui.home
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.tvapplication.launcher.ScreenOffReceiver
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.tvapplication.commons.CircularIndeterminateProgressBar
+import com.example.tvapplication.ui.video.ExoPlayerColumnAutoplayScreen
 import com.example.tvapplication.ui.video.VideoViewModel
+import com.example.tvapplication.workerManager.worker.AlarmCheckerWorker
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: VideoViewModel = hiltViewModel()) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: VideoViewModel = hiltViewModel(),
+    context: Context
+) {
     val versionDetails by viewModel.versionDetails
 
-    val context = LocalContext.current
-    Log.i("in Receiver","test for command in Home")
-//    executeCommand("cmd activity start com.example.tvapplication")
+    Log.i("in Receiver", "test for command in Home")
 
 
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
+//    versionDetails?.onOffTimeSchedule?.forEach {
+    //set turn on time
 
-    val scheduleServiceExecuterIntent: Intent = Intent(
-        context,
-        ScreenOffReceiver::class.java
-    )
-
-    scheduleServiceExecuterIntent.putExtra("state", "Main")
-    val pendingIntent = PendingIntent.getBroadcast(context, 1048, scheduleServiceExecuterIntent, 0)
-    val time=System.currentTimeMillis()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        alarmManager?.set(AlarmManager.RTC_WAKEUP,60000,pendingIntent)
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 16)
+        set(Calendar.MINUTE, 22)
+        set(Calendar.SECOND, 0)
+        set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
 
     }
-//    alarmManager!!.setRepeating(
-//        AlarmManager.RTC_WAKEUP,
-//        time,
-//        60000,
-//        pendingIntent
+    val duration=calendar.timeInMillis-System.currentTimeMillis()
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+        .build()
+    val data = Data.Builder()
+    data.putBoolean("isTurnOf", true)
+    val request = OneTimeWorkRequestBuilder<AlarmCheckerWorker>()
+        .setInitialDelay(duration, TimeUnit.MILLISECONDS)
+        .setConstraints(constraints)
+        .setInputData(data.build())
+        .build()
+
+    WorkManager.getInstance(context).enqueue(request)
+
+//    setAlarm(
+//        context = context,
+//        day = Calendar.SATURDAY,
+//        hour = 14,
+//        minute = 25,
+//        requestCode = 68,
+//        isTurnOf = false
 //    )
-
-
-
-//    versionDetails!!.onOffTimeSchedule.forEach{
-//                setAlarm(broadcastReceiver,context,day= getDayOfWeek( it.day), hour = it.onTime1!!.hour.toInt(), minute = it.onTime1.minute.toInt())
-//            }
-
-//    Box {
-//        CircularIndeterminateProgressBar(isDisplayed = true)
-//        ExoPlayerColumnAutoplayScreen(viewModel)
+    //set turn of time
+//    setAlarm(
+//        context = context,
+//        day = Calendar.SATURDAY,
+//        hour = 13,
+//        minute = 50,
+//        requestCode = 1240,
+//        isTurnOf = true
+//    )
+//    setAlarm(
+//        context,
+//        day = getDayOfWeek(it.day),
+//        hour = if (it.offTime1?.hour != null) it.offTime1.hour.toInt() else 0,
+//        minute = if (it.offTime1?.minute != null) it.offTime1.minute.toInt() else 0,
+//        requestCode = 1234,
+//        isTurnOf = true
+//    )
 //    }
+    Box {
+        CircularIndeterminateProgressBar(isDisplayed = true)
+        ExoPlayerColumnAutoplayScreen(viewModel)
+    }
+
 }
+
+

@@ -3,13 +3,23 @@ package com.example.tvapplication.launcher
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.tvapplication.MainActivity
 
 
 open class BootCompletedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        val intent = Intent("gotoBlack")
+        if (intent != null) {
+//            if (intent.action == "gotoTurnOf"){
+//                exitProcess(0)
+//            }
+//            if (intent.action == "gotoTurnOn"){
+                val i = Intent(context?.applicationContext, MainActivity::class.java)
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context?.startActivity(i)
+        }
 
-        context?.sendBroadcast(intent)
+//        }
+
 
 
 //        val message = "Hellooo, alrm worked ---- context is :$context"
