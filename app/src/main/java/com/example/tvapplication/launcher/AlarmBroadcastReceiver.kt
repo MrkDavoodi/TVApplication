@@ -14,34 +14,34 @@ import kotlinx.coroutines.launch
 class AlarmBroadcastReceiver : BroadcastReceiver() {
     private val broadcastReceiverScope = CoroutineScope(SupervisorJob())
 
-    override fun onReceive(p0: Context?, p1: Intent?) {
+    override fun onReceive(context: Context?, intent: Intent?) {
         val pendingResult: PendingResult = goAsync()
         broadcastReceiverScope.launch(Dispatchers.Default) {
             try {
-                p1?.let { intent ->
+                intent?.let { intent ->
                     when (intent.action) {
                         "android.intent.action.BOOT_COMPLETED" -> {
                             val launchIntent =
-                                p0?.packageManager?.getLaunchIntentForPackage("com.example.tvapplication")
+                                context?.packageManager?.getLaunchIntentForPackage("com.example.tvapplication")
                             launchIntent?.let {
                                 it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                p0.startActivity(it)
+                                context.startActivity(it)
                             }
                         }
                         "BOOT_COMPLETED" -> {
                             val launchIntent =
-                                p0?.packageManager?.getLaunchIntentForPackage("com.example.tvapplication")
+                                context?.packageManager?.getLaunchIntentForPackage("com.example.tvapplication")
                             launchIntent?.let {
-                                p0.startActivity(it)
+                                context.startActivity(it)
                             }
                         }
 
                         "EXIT_APP_ACTION" -> {
                             // Close all activities in the app
-                            Toast.makeText(p0, "Action: " + intent.action, Toast.LENGTH_SHORT)
+                            Toast.makeText(context, "Action: " + intent.action, Toast.LENGTH_SHORT)
                                 .show()
 //                            exitProcess(0)
-                            (p0 as? Activity)?.finishAffinity()
+                            (context as? Activity)?.finishAffinity()
                         }
 
                         else -> {

@@ -7,6 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.tvapplication.MainActivity
+import kotlin.system.exitProcess
 
 class AlarmCheckerWorker (
     ctx: Context,
@@ -15,10 +16,15 @@ class AlarmCheckerWorker (
 
     override suspend fun doWork(): Result {
         val isTurnOf =  inputData.getBoolean("isTurnOf",false)
+
         return try {
+            if (!isTurnOf){
             val i = Intent(applicationContext, MainActivity::class.java)
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            applicationContext.startActivity(i)
+            applicationContext.startActivity(i)}
+            else{
+                exitProcess(0)
+            }
             Result.success()
         } catch (e: Exception) {
             Result.failure()

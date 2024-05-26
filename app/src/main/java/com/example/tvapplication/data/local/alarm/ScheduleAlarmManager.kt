@@ -33,7 +33,7 @@ class ScheduleAlarmManager @Inject constructor(
         val alarmManager =
             applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmIntent = Intent(applicationContext, AlarmBroadcastReceiver::class.java).apply {
-            action = ""
+            action = "BOOT_COMPLETED"
         }
         val alarmOffTimeIntent = Intent(applicationContext, AlarmBroadcastReceiver::class.java).apply {
             action = "EXIT_APP_ACTION"
@@ -51,12 +51,7 @@ class ScheduleAlarmManager @Inject constructor(
             set(Calendar.DAY_OF_WEEK, getDayOfWeek(alarm.day))
 
         }
-        val toastText =
-            "Recurring Alarm scheduled at ${alarm.onTime1?.hour}:${alarm.onTime1?.minute}"
 
-        handler.post {
-            Toast.makeText(applicationContext, toastText, Toast.LENGTH_SHORT).show()
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(

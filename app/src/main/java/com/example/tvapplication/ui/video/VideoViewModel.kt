@@ -96,6 +96,10 @@ class VideoViewModel @Inject constructor(
         }
         return inFiles
     }
+    fun fetchFirstVideo(){
+
+
+    }
 
     fun saveSchedule() {
         viewModelScope.launch {
@@ -104,14 +108,15 @@ class VideoViewModel @Inject constructor(
                 async {
                     scheduleAlarmManager.schedule(
                         OnOffTimeSchedule(
-                            day = "tue",
-                            onTime1 = OnTime("12", "48"),
-                            offTime1 = OnTime("14", "40")
+                            day = "sun",
+                            onTime1 = OnTime("9", "18"),
+                            offTime1 = OnTime("9", "15")
                         )
                     )
                 },
             )
         }
     }
+
 
 }

@@ -26,24 +26,19 @@ fun setAlarm(
     else
         alarm.setAction("gotoTurnOn")
 
+    if (hour != -1 || minute != -1) {
+        val pendingIntent = PendingIntent.getBroadcast(context, 1234, alarm,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.DAY_OF_WEEK, day)
 
-    val alarmRunning = PendingIntent.getBroadcast(
-        context,
-        requestCode,
-        alarm,
-        PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-    ) != null
-    if (!alarmRunning) {
-        if (hour != -1 || minute != -1) {
-            val pendingIntent = PendingIntent.getBroadcast(context, 1234, alarm, 0)
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, hour)
-                set(Calendar.MINUTE, minute)
-                set(Calendar.SECOND, 0)
-                set(Calendar.DAY_OF_WEEK, day)
-
-            }
+        }
+        val duration = calendar.timeInMillis-System.currentTimeMillis()
+        if (duration>0)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarmManager.setAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
@@ -58,6 +53,6 @@ fun setAlarm(
                 )
             }
 
-        }
+
     }
 }
