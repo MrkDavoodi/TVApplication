@@ -29,6 +29,7 @@ class VideoViewModel @Inject constructor(
     var versionDetails = mutableStateOf<VsersionModel?>(null)
     private val videoList: MutableList<VideoItem> = mutableListOf()
     val videos = MutableStateFlow<List<VideoItem>>(listOf())
+    val holidays = MutableStateFlow<List<Int>>(listOf())
 
     private val onOffTimeScheduleList: MutableList<OnOffTimeSchedule> = mutableListOf()
     val scheduleList = MutableStateFlow<List<OnOffTimeSchedule>>(listOf())
@@ -68,6 +69,9 @@ class VideoViewModel @Inject constructor(
 
                                 }
                                 scheduleList.value = onOffTimeScheduleList
+//                                val holiday=versionDetails.value?.Holyday
+//                                for (i:Int in holiday.chars()){}
+
                             }
                         }
                     } else {

@@ -7,7 +7,7 @@ data class OnOffTimeSchedule(
     val day: String,
     @SerializedName("onTime1")
     val onTime1: OnTime?,
-    @SerializedName("onTime1")
+    @SerializedName("offTime1")
     val offTime1: OnTime?
 )
 
