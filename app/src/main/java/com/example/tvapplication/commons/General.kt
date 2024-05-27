@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Build
+import android.os.PowerManager
 import android.util.DisplayMetrics
 import android.util.Log
 import com.example.tvapplication.MainActivity
@@ -98,20 +99,24 @@ fun sendDeviceAdminBroadcast(context: Context) {
     context.sendBroadcast(intent)
 }
 fun unlockDevice(context: Context) {
-    val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-    val adminComponentName = ComponentName(context, MyDeviceAdminReceiver::class.java)
 
-    if (devicePolicyManager.isAdminActive(adminComponentName)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            devicePolicyManager.lockNow(DevicePolicyManager.FLAG_EVICT_CREDENTIAL_ENCRYPTION_KEY)
-        }
-
-    }
-    if (!devicePolicyManager.isAdminActive(adminComponentName)) {
-        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponentName)
-        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
-        context.startActivity(intent)
-    }
+    val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    val wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK  or PowerManager.ACQUIRE_CAUSES_WAKEUP, "tvapplication::MyWakelockTag")
+    wakeLock.acquire()
+//    val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+//    val adminComponentName = ComponentName(context, MyDeviceAdminReceiver::class.java)
+//
+//    if (devicePolicyManager.isAdminActive(adminComponentName)) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            devicePolicyManager.lockNow(DevicePolicyManager.FLAG_EVICT_CREDENTIAL_ENCRYPTION_KEY)
+//        }
+//
+//    }
+//    if (!devicePolicyManager.isAdminActive(adminComponentName)) {
+//        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+//        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponentName)
+//        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
+//        context.startActivity(intent)
+//    }
 }
 

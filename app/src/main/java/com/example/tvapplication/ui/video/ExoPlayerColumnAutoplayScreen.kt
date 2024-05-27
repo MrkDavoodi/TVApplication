@@ -220,19 +220,19 @@ private fun SetSchedule(
 //            isTurnOf = false
 //        )
         //set turn of time
-//                    setAlarm(
-//                        context = context,
-//                        day = Calendar.MONDAY,
-//                        hour = 13,
-//                        minute = 20,
-//                        requestCode = 1240+index,
-//                        isTurnOf = true
-//                    )
                     setAlarm(
                         context = context,
                         day = Calendar.MONDAY,
-                        hour = 14,
-                        minute =29,
+                        hour = 15,
+                        minute = 56,
+                        requestCode = 1240+index,
+                        isTurnOf = true
+                    )
+                    setAlarm(
+                        context = context,
+                        day = Calendar.MONDAY,
+                        hour = 15,
+                        minute =57,
                         requestCode = 1242+index,
                         isTurnOf = false
                     )
