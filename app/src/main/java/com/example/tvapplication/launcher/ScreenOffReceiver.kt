@@ -30,7 +30,7 @@ class ScreenOffReceiver : BroadcastReceiver() {
 //            adminIntent.putExtra(
 //                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
 //                "Please allow this app to lock the screen"
-//            )
+//            )}
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 //                adminIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 //            }

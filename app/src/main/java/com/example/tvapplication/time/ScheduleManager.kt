@@ -37,7 +37,8 @@ fun setAlarm(
             set(Calendar.DAY_OF_WEEK, day)
 
         }
-        val duration = calendar.timeInMillis-System.currentTimeMillis()
+        val now=System.currentTimeMillis()
+        val duration = calendar.timeInMillis-now
         if (duration>0)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarmManager.setAndAllowWhileIdle(

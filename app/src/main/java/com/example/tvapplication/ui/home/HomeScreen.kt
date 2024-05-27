@@ -23,12 +23,9 @@ fun HomeScreen(
 
     Log.i("in Receiver", "test for command in Home")
 
-
     Box {
         CircularIndeterminateProgressBar(isDisplayed = true)
         ExoPlayerColumnAutoplayScreen(viewModel)
     }
 
 }
-
-

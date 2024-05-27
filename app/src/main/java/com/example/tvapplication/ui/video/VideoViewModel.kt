@@ -69,8 +69,10 @@ class VideoViewModel @Inject constructor(
 
                                 }
                                 scheduleList.value = onOffTimeScheduleList
-//                                val holiday=versionDetails.value?.Holyday
-//                                for (i:Int in holiday.chars()){}
+                                val holiday=versionDetails.value?.Holyday
+                                if (holiday != null) {
+                                    holidays.value=holiday.map { it.toInt() }
+                                }
 
                             }
                         }

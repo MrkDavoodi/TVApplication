@@ -1,5 +1,7 @@
 package com.example.tvapplication.commons
 
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -8,6 +10,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
 import com.example.tvapplication.MainActivity
+import com.example.tvapplication.admin.MyDeviceAdminReceiver
 import java.util.Calendar
 
 
@@ -76,3 +79,39 @@ fun openActivity(mContext: Context?) {
         mContext.startActivity(browserIntent2)
     }
 }
+
+fun putDeviceToSleep(context: Context) {
+    val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+    val componentName = ComponentName(context, MyDeviceAdminReceiver::class.java)
+    if (!devicePolicyManager.isAdminActive(componentName)) {
+        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
+        context.startActivity(intent)
+    }
+    if(devicePolicyManager.isAdminActive(componentName)) {
+        devicePolicyManager.lockNow()
+    }
+}
+fun sendDeviceAdminBroadcast(context: Context) {
+    val intent = Intent("android.app.action.DEVICE_ADMIN_ENABLED")
+    context.sendBroadcast(intent)
+}
+fun unlockDevice(context: Context) {
+    val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+    val adminComponentName = ComponentName(context, MyDeviceAdminReceiver::class.java)
+
+    if (devicePolicyManager.isAdminActive(adminComponentName)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            devicePolicyManager.lockNow(DevicePolicyManager.FLAG_EVICT_CREDENTIAL_ENCRYPTION_KEY)
+        }
+
+    }
+    if (!devicePolicyManager.isAdminActive(adminComponentName)) {
+        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponentName)
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
+        context.startActivity(intent)
+    }
+}
+

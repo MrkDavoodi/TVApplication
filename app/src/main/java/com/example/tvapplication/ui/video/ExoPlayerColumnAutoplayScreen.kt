@@ -26,7 +26,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.tvapplication.commons.getDayOfWeek
 import com.example.tvapplication.commons.internet.ConnectionState
 import com.example.tvapplication.commons.internet.connectivityState
 import com.example.tvapplication.commons.internet.saveFileData
@@ -39,6 +38,7 @@ import com.example.tvapplication.ui.internet.NoConnectionScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import java.util.Calendar
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -211,31 +211,39 @@ private fun SetSchedule(
     versionDetails?.onOffTimeSchedule?.forEach {
         //set turn on time
         index++
-        setAlarm(
-            context,
-            day = getDayOfWeek(it.day),
-            hour = if (it.onTime1?.hour != null) it.onTime1.hour.toInt() else 0,
-            minute = if (it.onTime1?.minute != null) it.onTime1.minute.toInt() else 0,
-            requestCode = 168 + index,
-            isTurnOf = false
-        )
+//        setAlarm(
+//            context,
+//            day = getDayOfWeek(it.day),
+//            hour = if (it.onTime1?.hour != null) it.onTime1.hour.toInt() else 0,
+//            minute = if (it.onTime1?.minute != null) it.onTime1.minute.toInt() else 0,
+//            requestCode = 168 + index,
+//            isTurnOf = false
+//        )
         //set turn of time
 //                    setAlarm(
 //                        context = context,
-//                        day = Calendar.SUNDAY,
-//                        hour = 12,
-//                        minute = 53,
+//                        day = Calendar.MONDAY,
+//                        hour = 13,
+//                        minute = 20,
 //                        requestCode = 1240+index,
 //                        isTurnOf = true
 //                    )
-        setAlarm(
-            context,
-            day = getDayOfWeek(it.day),
-            hour = if (it.offTime1?.hour != null) it.offTime1.hour.toInt() else 0,
-            minute = if (it.offTime1?.minute != null) it.offTime1.minute.toInt() else 0,
-            requestCode = 1234 + index,
-            isTurnOf = true
-        )
+                    setAlarm(
+                        context = context,
+                        day = Calendar.MONDAY,
+                        hour = 14,
+                        minute =29,
+                        requestCode = 1242+index,
+                        isTurnOf = false
+                    )
+//        setAlarm(
+//            context,
+//            day = getDayOfWeek(it.day),
+//            hour = if (it.offTime1?.hour != null) it.offTime1.hour.toInt() else 0,
+//            minute = if (it.offTime1?.minute != null) it.offTime1.minute.toInt() else 0,
+//            requestCode = 1234 + index,
+//            isTurnOf = true
+//        )
     }
 }
 
