@@ -16,7 +16,6 @@ import com.example.tvapplication.ui.video.VideoViewModel
 fun HomeScreen(
     navController: NavController,
     viewModel: VideoViewModel = hiltViewModel(),
-    context: Context
 ) {
 //    viewModel.getVersion()
     val versionDetails by viewModel.versionDetails

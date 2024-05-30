@@ -29,8 +29,6 @@ class VideoViewModel @Inject constructor(
     var versionDetails = mutableStateOf<VsersionModel?>(null)
     private val videoList: MutableList<VideoItem> = mutableListOf()
     val videos = MutableStateFlow<List<VideoItem>>(listOf())
-    val holidays = MutableStateFlow<List<Int>>(listOf())
-
     private val onOffTimeScheduleList: MutableList<OnOffTimeSchedule> = mutableListOf()
     val scheduleList = MutableStateFlow<List<OnOffTimeSchedule>>(listOf())
 
@@ -69,11 +67,6 @@ class VideoViewModel @Inject constructor(
 
                                 }
                                 scheduleList.value = onOffTimeScheduleList
-                                val holiday=versionDetails.value?.Holyday
-                                if (holiday != null) {
-                                    holidays.value=holiday.map { it.toInt() }
-                                }
-
                             }
                         }
                     } else {
@@ -102,7 +95,8 @@ class VideoViewModel @Inject constructor(
         }
         return inFiles
     }
-    fun fetchFirstVideo(){
+
+    fun fetchFirstVideo() {
 
 
     }

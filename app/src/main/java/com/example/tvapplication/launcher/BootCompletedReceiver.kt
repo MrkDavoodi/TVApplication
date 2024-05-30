@@ -12,8 +12,6 @@ import kotlinx.coroutines.SupervisorJob
 
 
 open class BootCompletedReceiver : BroadcastReceiver() {
-    private val broadcastReceiverScope = CoroutineScope(SupervisorJob())
-
     override fun onReceive(context: Context?, intent: Intent?) {
         try {
             if (intent != null) {
@@ -26,10 +24,7 @@ open class BootCompletedReceiver : BroadcastReceiver() {
                 if (intent.action == "gotoTurnOn") {
                     if (context != null) {
                         unlockDevice(context)
-//                        sendDeviceAdminBroadcast(context)
-//                        val i = Intent(context.applicationContext, MainActivity::class.java)
-//                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                        context.startActivity(i)
+
                     }
 
                 }

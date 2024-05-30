@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.PowerManager
 import android.util.DisplayMetrics
 import android.util.Log
+import androidx.media3.datasource.DataSpec.Flags
 import com.example.tvapplication.MainActivity
 import com.example.tvapplication.admin.MyDeviceAdminReceiver
 import java.util.Calendar
@@ -31,7 +32,7 @@ fun getDayOfWeek(day: String): Int {
     return when (day) {
         "mon" -> Calendar.MONDAY
         "tue" -> Calendar.TUESDAY
-        "eed" -> Calendar.WEDNESDAY
+        "wed" -> Calendar.WEDNESDAY
         "thu" -> Calendar.THURSDAY
         "fri" -> Calendar.FRIDAY
         "sat" -> Calendar.SATURDAY
@@ -40,46 +41,6 @@ fun getDayOfWeek(day: String): Int {
     }
 }
 
-fun openActivity(mContext: Context?) {
-
-    val launcherIntent = Intent()
-        .setAction(Intent.ACTION_BOOT_COMPLETED)
-        .addCategory(Intent.CATEGORY_LAUNCHER)
-    var possibleBrowsers: List<ResolveInfo>
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        possibleBrowsers = mContext?.packageManager?.queryIntentActivities(
-            launcherIntent,
-            PackageManager.MATCH_DEFAULT_ONLY
-        )!!
-        if (possibleBrowsers.isEmpty()) {
-            possibleBrowsers = mContext.packageManager?.queryIntentActivities(
-                launcherIntent,
-                PackageManager.MATCH_ALL
-            )!!
-        }
-        Log.i("In Receiver","This is possibleBrowsers : $possibleBrowsers")
-
-    } else {
-        possibleBrowsers = mContext?.packageManager?.queryIntentActivities(
-            launcherIntent,
-            PackageManager.MATCH_DEFAULT_ONLY
-        )!!
-    }
-
-
-    if (possibleBrowsers.isNotEmpty()) {
-        val launchIntent =
-            mContext.packageManager?.getLaunchIntentForPackage(possibleBrowsers[0].activityInfo.packageName)
-        launchIntent?.let {
-            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            mContext.startActivity(it)
-        }
-
-    } else {
-        val browserIntent2 = Intent(Intent.ACTION_BOOT_COMPLETED)
-        mContext.startActivity(browserIntent2)
-    }
-}
 
 fun putDeviceToSleep(context: Context) {
     val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
@@ -88,6 +49,7 @@ fun putDeviceToSleep(context: Context) {
         val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
+        intent.flags=Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(intent)
     }
     if(devicePolicyManager.isAdminActive(componentName)) {
@@ -102,21 +64,8 @@ fun unlockDevice(context: Context) {
 
     val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
     val wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK  or PowerManager.ACQUIRE_CAUSES_WAKEUP, "tvapplication::MyWakelockTag")
+//    if (!wakeLock.isHeld)
     wakeLock.acquire()
-//    val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-//    val adminComponentName = ComponentName(context, MyDeviceAdminReceiver::class.java)
-//
-//    if (devicePolicyManager.isAdminActive(adminComponentName)) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            devicePolicyManager.lockNow(DevicePolicyManager.FLAG_EVICT_CREDENTIAL_ENCRYPTION_KEY)
-//        }
-//
-//    }
-//    if (!devicePolicyManager.isAdminActive(adminComponentName)) {
-//        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-//        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponentName)
-//        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
-//        context.startActivity(intent)
-//    }
+
 }
 

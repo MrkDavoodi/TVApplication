@@ -12,8 +12,6 @@ import com.example.tvapplication.commons.GlobalProperties.PendingIntentFlags
 import com.example.tvapplication.commons.getDayOfWeek
 import com.example.tvapplication.launcher.AlarmBroadcastReceiver
 import com.example.tvapplication.model.version.OnOffTimeSchedule
-import com.example.tvapplication.workerManager.worker.ALARM_CHECKER_TAG
-import com.example.tvapplication.workerManager.worker.AlarmCheckerWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
@@ -82,7 +80,7 @@ class ScheduleAlarmManager @Inject constructor(
         )
         val toastText = "Alarm canceled for ${alarm.onTime1?.hour}:${alarm.onTime1?.minute}"
 
-        workRequestManager.enqueueWorker<AlarmCheckerWorker>(ALARM_CHECKER_TAG)
+//        workRequestManager.enqueueWorker<AlarmCheckerWorker>(ALARM_CHECKER_TAG)
 
         handler.post {
             Toast.makeText(applicationContext, toastText, Toast.LENGTH_SHORT).show()

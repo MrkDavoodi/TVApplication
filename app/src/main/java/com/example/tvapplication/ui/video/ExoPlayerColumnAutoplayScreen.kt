@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.tvapplication.commons.getDayOfWeek
 import com.example.tvapplication.commons.internet.ConnectionState
 import com.example.tvapplication.commons.internet.connectivityState
 import com.example.tvapplication.commons.internet.saveFileData
@@ -37,8 +38,11 @@ import com.example.tvapplication.time.setAlarm
 import com.example.tvapplication.ui.internet.NoConnectionScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
+import saman.zamani.persiandate.PersianDate
 import java.util.Calendar
+import kotlin.time.Duration.Companion.days
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -53,10 +57,11 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
     val videoList: MutableList<VideoItem> = mutableListOf()
     val items = remember { mutableStateListOf<VideoItem>() }
     var playingVideoItem by remember { mutableStateOf(items.firstOrNull()) }
-    var isPlaying by remember {mutableStateOf(true)}
+    var isPlaying by remember { mutableStateOf(true) }
     val connection by connectivityState()
     val isConnected = connection === ConnectionState.Available
     val localList = viewModel.getListFiles(context)
+
 
     if (isConnected) {
 //        mainService {
@@ -172,9 +177,10 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
             if (playingVideoItem == null) return@LifecycleEventObserver
             when (event) {
                 Lifecycle.Event.ON_START -> {
-                    isPlaying=false
+                    isPlaying = false
                     exoPlayer.play()
                 }
+
                 Lifecycle.Event.ON_STOP -> exoPlayer.pause()
                 else -> {}
             }
@@ -207,43 +213,71 @@ private fun SetSchedule(
     versionDetails: VsersionModel?,
     context: Context
 ) {
-    var index = 0
-    versionDetails?.onOffTimeSchedule?.forEach {
-        //set turn on time
-        index++
-//        setAlarm(
-//            context,
-//            day = getDayOfWeek(it.day),
-//            hour = if (it.onTime1?.hour != null) it.onTime1.hour.toInt() else 0,
-//            minute = if (it.onTime1?.minute != null) it.onTime1.minute.toInt() else 0,
-//            requestCode = 168 + index,
-//            isTurnOf = false
-//        )
-        //set turn of time
-                    setAlarm(
-                        context = context,
-                        day = Calendar.MONDAY,
-                        hour = 15,
-                        minute = 56,
-                        requestCode = 1240+index,
-                        isTurnOf = true
-                    )
-                    setAlarm(
-                        context = context,
-                        day = Calendar.MONDAY,
-                        hour = 15,
-                        minute =57,
-                        requestCode = 1242+index,
-                        isTurnOf = false
-                    )
-//        setAlarm(
-//            context,
-//            day = getDayOfWeek(it.day),
-//            hour = if (it.offTime1?.hour != null) it.offTime1.hour.toInt() else 0,
-//            minute = if (it.offTime1?.minute != null) it.offTime1.minute.toInt() else 0,
-//            requestCode = 1234 + index,
-//            isTurnOf = true
-//        )
+    val holiday = versionDetails?.Holyday
+    var holidays: List<Int> = emptyList()
+
+    if (holiday != null) {
+        holidays = holiday.map { it.code }
+    }
+    val pDate = PersianDate()
+    val today = pDate.dayInYear
+    val isTodayHoliday:Boolean = holidays[today] == 48
+
+    if (isTodayHoliday) {
+        val calendar=Calendar.getInstance()
+        val today=calendar.get(Calendar.DAY_OF_WEEK)
+        setAlarm(
+            context,
+            day = calendar.get(Calendar.DAY_OF_WEEK),
+            hour = 0,
+            minute = 0,
+            requestCode = 1368,
+            isTurnOf = true
+        )
+
+    } else {
+        var index = 0
+        versionDetails?.onOffTimeSchedule?.forEach {
+            //set turn on time
+            index++
+            val day = getDayOfWeek(it.day)
+            val hour = it.onTime1?.hour?.toInt()
+            val min = it.onTime1?.minute?.toInt()
+            setAlarm(
+                context,
+                day = day,
+                hour = if (it.onTime1?.hour != null) it.onTime1.hour.toInt() else -1,
+                minute = if (it.onTime1?.minute != null) it.onTime1.minute.toInt() else -1,
+                requestCode = 1395 + index,
+                isTurnOf = false
+            )
+            setAlarm(
+                context,
+                day =day,
+                hour = if (it.offTime1?.hour != null) it.offTime1.hour.toInt() else 0,
+                minute = if (it.offTime1?.minute != null) it.offTime1.minute.toInt() else 0,
+                requestCode = 1989 + index,
+                isTurnOf = true
+            )
+            //set turn of time
+//                    setAlarm(
+//                        context = context,
+//                        day = Calendar.TUESDAY,
+//                        hour = 15,
+//                        minute = 59,
+//                        requestCode = 1240+index,
+//                        isTurnOf = true
+//                    )
+//                    setAlarm(
+//                        context = context,
+//                        day = Calendar.TUESDAY,
+//                        hour = 16,
+//                        minute =2,
+//                        requestCode = 1242+index,
+//                        isTurnOf = false
+//                    )
+
+        }
     }
 }
 

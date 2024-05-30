@@ -1,5 +1,8 @@
 package com.example.tvapplication
 
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
@@ -28,6 +31,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
+import com.example.tvapplication.admin.MyDeviceAdminReceiver
 import com.example.tvapplication.navigation.LocalNavigation
 import com.example.tvapplication.navigation.MainGraph
 import com.example.tvapplication.navigation.Navigation
@@ -118,6 +122,8 @@ class MainActivity : ComponentActivity() {
                                 startActivityForResult(intent, requestCode)
                             }
 
+                        getAdminPermission(context)
+
                         CompositionLocalProvider(LocalNavigation provides navigation) {
                             MainGraph(navController, this@MainActivity)
                         }
@@ -127,6 +133,18 @@ class MainActivity : ComponentActivity() {
             }
         }
         hideSystemUI()
+    }
+
+    private fun getAdminPermission(context: Context) {
+        val devicePolicyManager =
+            context.getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        val componentName = ComponentName(context, MyDeviceAdminReceiver::class.java)
+        if (!devicePolicyManager.isAdminActive(componentName)) {
+            val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
+            startActivity(intent)
+        }
     }
 
     private fun hideSystemUI() {

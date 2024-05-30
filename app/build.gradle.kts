@@ -96,7 +96,7 @@ dependencies {
 
     implementation(libs.kscript.tools)
 
-
-
+    //persian calendar
+    implementation (libs.persian.date)
 
 }

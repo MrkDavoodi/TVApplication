@@ -13,6 +13,8 @@ kscriptTools = "1.0.2"
 lifecycleVersion = "2.7.0"
 lottieVersion = "4.0.0"
 mediaVersion = "1.2.0"
+persiandate = "1.7.1"
+persiandateVersion = "1.7.1"
 retrofitVersion = "2.9.0"
 runtimeLivedata = "1.6.6"
 tvFoundation = "1.0.0-alpha07"
@@ -49,6 +51,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kscript-tools = { module = "com.sealwu:kscript-tools", version.ref = "kscriptTools" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieVersion" }
+persian-date = { module = "com.github.samanzamani:PersianDate", version.ref = "persiandateVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 

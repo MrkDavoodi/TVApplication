@@ -17,7 +17,7 @@ fun MainGraph(
     NavHost(navController = navHostController, startDestination = Route.Home.routeArg) {
 
         composable(route = Route.Home.routeArg) {
-            HomeScreen(navController = navHostController, context = context)
+            HomeScreen(navController = navHostController)
         }
         composable(route = Route.ExoPlayerColumnAutoplay.routeArg) {
             ExoPlayerColumnAutoplayScreen()
