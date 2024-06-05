@@ -81,7 +81,7 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
             SetSchedule(versionDetails, context)
 
             if (newVersionWeb != null) {
-                if (localList.isEmpty() || oldVersionWeb.toDouble() <= newVersionWeb.toDouble() || videos.size>localList.size) {
+                if (localList.isEmpty() || oldVersionWeb.toDouble() < newVersionWeb.toDouble() || videos.size>localList.size) {
                     SharedPreferencesHelper.saveVersionNumber(
                         context,
                         versionDetails?.Ver.toString()
@@ -257,8 +257,8 @@ private fun SetSchedule(
                     setAlarm(
                         context = context,
                         day = Calendar.WEDNESDAY,
-                        hour = 22,
-                        minute = 59,
+                        hour = 23,
+                        minute = 23,
                         requestCode = 1240+index,
                         isTurnOf = true
                     )
@@ -266,7 +266,7 @@ private fun SetSchedule(
                         context = context,
                         day = Calendar.WEDNESDAY,
                         hour = 23,
-                        minute =0,
+                        minute =26,
                         requestCode = 1242+index,
                         isTurnOf = false
                     )
