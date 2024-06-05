@@ -1,6 +1,7 @@
 package com.example.tvapplication.ui.video
 
 import android.content.Context
+import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,7 @@ import com.example.tvapplication.repository.GetVersionRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -28,7 +30,12 @@ class VideoViewModel @Inject constructor(
 ) : ViewModel() {
     var versionDetails = mutableStateOf<VsersionModel?>(null)
     private val videoList: MutableList<VideoItem> = mutableListOf()
-    val videos = MutableStateFlow<List<VideoItem>>(listOf())
+//    val videos = MutableStateFlow<List<VideoItem>>(listOf())
+    private val _videos: MutableStateFlow<List<VideoItem>> =
+        MutableStateFlow(listOf())
+    val videos: StateFlow<List<VideoItem>> = _videos
+
+
     private val onOffTimeScheduleList: MutableList<OnOffTimeSchedule> = mutableListOf()
     val scheduleList = MutableStateFlow<List<OnOffTimeSchedule>>(listOf())
 
@@ -54,7 +61,7 @@ class VideoViewModel @Inject constructor(
                                         )
                                     )
                                 }
-                                videos.value = videoList
+                                _videos.value = videoList
                                 versionDetails.value?.onOffTimeSchedule?.forEach {
                                     val time = it
                                     onOffTimeScheduleList.add(
@@ -80,7 +87,7 @@ class VideoViewModel @Inject constructor(
     fun getListFiles(context: Context): ArrayList<File> {
         val inFiles = arrayListOf<File>()
         try {
-            val parentDir = File(context.filesDir.toString() + "/Folder")
+            val parentDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) , "/Folder")
             if (parentDir.exists()) {
                 val files = parentDir.listFiles()?.filter { it.isFile }
                 files?.forEach { file ->

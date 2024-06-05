@@ -59,23 +59,23 @@ class MainActivity : ComponentActivity() {
         KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4
     )
 
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-//        inputKeys.add(keyCode)
-//        if (inputKeys == secretKey) {
-//            finish()
-//        }else{
-//            return false
-//        }
-//
-//        return super.onKeyDown(keyCode, event)
-//    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        inputKeys.add(keyCode)
+        if (inputKeys == secretKey) {
+            finish()
+        }else{
+            return false
+        }
 
-//    @Deprecated("Deprecated in Java",
-//        ReplaceWith("super.onBackPressed()", "androidx.activity.ComponentActivity")
-//    )
-//    override fun onBackPressed() {
-//        super.onBackPressed()
-//    }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    @Deprecated("Deprecated in Java",
+        ReplaceWith("super.onBackPressed()", "androidx.activity.ComponentActivity")
+    )
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 
 
     fun manageScreenSaver() {

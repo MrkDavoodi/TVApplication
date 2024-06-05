@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.tvapplication.ui.BlackScreen
 import com.example.tvapplication.ui.home.HomeScreen
 import com.example.tvapplication.ui.video.ExoPlayerColumnAutoplayScreen
 
@@ -22,8 +21,6 @@ fun MainGraph(
         composable(route = Route.ExoPlayerColumnAutoplay.routeArg) {
             ExoPlayerColumnAutoplayScreen()
         }
-        composable(route = Route.BlackScreen.routeArg) {
-            BlackScreen(navController = navHostController)
-        }
+
     }
 }
