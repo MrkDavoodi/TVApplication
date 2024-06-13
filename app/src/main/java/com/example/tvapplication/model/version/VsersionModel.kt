@@ -12,7 +12,9 @@ data class VsersionModel(
     @SerializedName("Player")
     val Player: List<String>,
     @SerializedName("Ver")
-    val Ver: Int,
+    val Ver: String="0",
+    @SerializedName("category")
+    val categoryList: List<String>,
     @SerializedName("VideoList")
     val VideoList: List<String>,
     @SerializedName("needToUpp")

@@ -54,7 +54,6 @@ fun VideoPlayerWithControls(exoPlayer: ExoPlayer) {
 }
 @Composable
 fun AutoPlayVideoCard(
-    videoItem: VideoItem,
     isPlaying: Boolean,
     exoPlayer: ExoPlayer,
 ) {

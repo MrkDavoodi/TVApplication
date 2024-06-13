@@ -99,4 +99,6 @@ dependencies {
     //persian calendar
     implementation (libs.persian.date)
 
+    implementation (libs.androidx.activity.ktx)
+
 }

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.example.tvapplication.commons.putDeviceToSleep
 import com.example.tvapplication.commons.sendDeviceAdminBroadcast
+import com.example.tvapplication.commons.turnOffScreen
 import com.example.tvapplication.commons.unlockDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -17,6 +18,7 @@ open class BootCompletedReceiver : BroadcastReceiver() {
             if (intent != null) {
                 if (intent.action == "gotoTurnOf") {
                     if (context != null){
+//                        turnOffScreen(context)
                         putDeviceToSleep(context)
                         sendDeviceAdminBroadcast(context)
                     }

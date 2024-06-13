@@ -5,17 +5,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.KeyEvent
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -27,7 +24,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
@@ -37,21 +33,16 @@ import com.example.tvapplication.navigation.MainGraph
 import com.example.tvapplication.navigation.Navigation
 import com.example.tvapplication.ui.theme.TVApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    var screenSaverJob: Job? = null
-
-    companion object {
-        init {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
-    }
+//    companion object {
+//        init {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//        }
+//    }
 
     private val inputKeys = arrayListOf<Int?>()
     private val secretKey = listOf(
@@ -63,27 +54,19 @@ class MainActivity : ComponentActivity() {
         inputKeys.add(keyCode)
         if (inputKeys == secretKey) {
             finish()
-        }else{
+        } else {
             return false
         }
 
         return super.onKeyDown(keyCode, event)
     }
 
-    @Deprecated("Deprecated in Java",
+    @Deprecated(
+        "Deprecated in Java",
         ReplaceWith("super.onBackPressed()", "androidx.activity.ComponentActivity")
     )
     override fun onBackPressed() {
         super.onBackPressed()
-    }
-
-
-    fun manageScreenSaver() {
-
-        screenSaverJob?.cancel()
-        screenSaverJob = lifecycleScope.launch(Dispatchers.Default) {
-
-        }
     }
 
     override fun onStart() {
@@ -104,25 +87,13 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         shape = RectangleShape
                     ) {
-
                         val context = LocalContext.current
-//                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                         val navController = rememberNavController()
                         val navigation = remember {
                             Navigation(navController)
                         }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                            if (!Settings.canDrawOverlays(context)) {
-                                val intent = Intent(
-                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                    Uri.parse("package:$packageName")
-                                )
-                                val requestCode = 123
-
-                                startActivityForResult(intent, requestCode)
-                            }
-
-                        getAdminPermission(context)
 
                         CompositionLocalProvider(LocalNavigation provides navigation) {
                             MainGraph(navController, this@MainActivity)
@@ -133,18 +104,6 @@ class MainActivity : ComponentActivity() {
             }
         }
         hideSystemUI()
-    }
-
-    private fun getAdminPermission(context: Context) {
-        val devicePolicyManager =
-            context.getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        val componentName = ComponentName(context, MyDeviceAdminReceiver::class.java)
-        if (!devicePolicyManager.isAdminActive(componentName)) {
-            val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
-            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "دریافت مجوز ")
-            startActivity(intent)
-        }
     }
 
     private fun hideSystemUI() {

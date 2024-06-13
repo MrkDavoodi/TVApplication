@@ -22,16 +22,6 @@ import java.net.URL
 import java.util.concurrent.TimeUnit
 
 
-suspend fun downloadFile(url: String, dest: String) {
-    withContext(Dispatchers.IO) {
-        URL(url).openStream()
-    }.use { input ->
-        File(dest).outputStream().use { output ->
-            input.copyTo(output)
-        }
-    }
-}
-
 fun downloadVideos(downloadPath: String, context: Context, fileName: String): File? {
     try {
         val direct = File(

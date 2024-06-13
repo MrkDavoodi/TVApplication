@@ -39,8 +39,15 @@ class VideoViewModel @Inject constructor(
     private val onOffTimeScheduleList: MutableList<OnOffTimeSchedule> = mutableListOf()
     val scheduleList = MutableStateFlow<List<OnOffTimeSchedule>>(listOf())
 
-    val videosFromDB = MutableStateFlow<List<VideoItem>>(listOf())
+    private val _videosFromDB : MutableList<VideoItem> = mutableListOf()
+    val videosFromDB  = _videosFromDB
 
+
+    init {
+        getVersion()
+        getListFiles()
+
+    }
     fun getVersion() {
         viewModelScope.launch {
             getVersionRepo.getVersion()
@@ -84,44 +91,30 @@ class VideoViewModel @Inject constructor(
 
     }
 
-    fun getListFiles(context: Context): ArrayList<File> {
-        val inFiles = arrayListOf<File>()
+    fun getListFiles(){
         try {
-            val parentDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) , "/Folder")
-            if (parentDir.exists()) {
+            val path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.toString()+"/Folder"
+//            val path="/storage/emulated/0/Download/Folder"
+            val parentDir = File(path)
+
+            if (parentDir.exists() && parentDir.isDirectory) {
                 val files = parentDir.listFiles()?.filter { it.isFile }
                 files?.forEach { file ->
-                    if (!inFiles.contains(file))
-                        inFiles.add(file)
+                    val videoFile=VideoItem(id=file.name.substringBefore(".mp4"), mediaUrl = file.path,"")
+                    if (!_videosFromDB.contains(videoFile)){
+                        _videosFromDB.add(
+                            VideoItem(
+                                id = file.name.substringBefore("."),
+                                mediaUrl = file.path,
+                                thumbnail = ""
+                            )
+                        )
+                    }
                 } ?: println("No files found or directory does not exist.")
-
             }
         } catch (e: Exception) {
             Log.i("Exception Of File", e.message.toString())
 
-        }
-        return inFiles
-    }
-
-    fun fetchFirstVideo() {
-
-
-    }
-
-    fun saveSchedule() {
-        viewModelScope.launch {
-
-            listOf(
-                async {
-                    scheduleAlarmManager.schedule(
-                        OnOffTimeSchedule(
-                            day = "sun",
-                            onTime1 = OnTime("9", "18"),
-                            offTime1 = OnTime("9", "15")
-                        )
-                    )
-                },
-            )
         }
     }
 
