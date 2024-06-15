@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -17,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -60,8 +62,7 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
     var isPlaying by remember { mutableStateOf(true) }
     val connection by connectivityState()
     val isConnected = connection === ConnectionState.Available
-
-    val localList : MutableList<VideoItem> = viewModel.videosFromDB
+    val localList = viewModel.videosFromDB
     if (localList.isNotEmpty()) {
         items.swapList(localList)
 
@@ -90,7 +91,15 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
                         Toast.LENGTH_SHORT
                     ).show()
                     if (localList.isEmpty())
-                        items.swapList(listOf(videos[0]))
+                        items.swapList(
+                            listOf(
+                                VideoItem(
+                                    id = videos[0].id,
+                                    mediaUrl = videos[0].mediaUrl,
+                                    thumbnail = ""
+                                )
+                            )
+                        )
 //                    if (localList.isNotEmpty() && localList.size != videos.size) {
 //                        localList.forEach { localItem ->
 //                            videos.forEach {
@@ -118,18 +127,17 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
                             }
 
                         }
-                        items.clear()
                         val listSwap: ArrayList<VideoItem> = arrayListOf()
                         downloadedFiles.forEach {
                             if (it != null) {
                                 listSwap.add(VideoItem(it.name, it.path, ""))
                             }
                         }
-                        items.swapList(listSwap)
-//
+//                        items.swapList(listSwap)
+
+                        viewModel.getListFiles()
+                        items.swapList(viewModel.videosFromDB)
                     }
-                    viewModel.getListFiles()
-                    items.swapList(viewModel.videosFromDB)
                 }
             }
 
@@ -157,7 +165,7 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
             exoPlayer.pause()
         } else {
             for (i in items.indices) {
-                val songPath: String = items[i].mediaUrl
+                val songPath = items[i].mediaUrl
                 val item: MediaItem = MediaItem.fromUri(songPath)
                 exoPlayer.addMediaItem(item)
             }
@@ -189,6 +197,16 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
         }
     }
 
+    ScreenOfListVideo(listState, items, playingVideoItem, exoPlayer)
+}
+
+@Composable
+private fun ScreenOfListVideo(
+    listState: LazyListState,
+    items: SnapshotStateList<VideoItem>,
+    playingVideoItem: VideoItem?,
+    exoPlayer: ExoPlayer
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -240,6 +258,8 @@ private fun SetSchedule(
             val day = getDayOfWeek(it.day)
             val hour = it.onTime1?.hour?.toInt()
             val min = it.onTime1?.minute?.toInt()
+            val hour2 = it.offTime1?.hour?.toInt()
+            val min2 = it.offTime1?.minute?.toInt()
             setAlarm(
                 context,
                 day = day,
@@ -253,7 +273,7 @@ private fun SetSchedule(
                 day = day,
                 hour = if (it.offTime1?.hour != null) it.offTime1.hour.toInt() else 0,
                 minute = if (it.offTime1?.minute != null) it.offTime1.minute.toInt() else 0,
-                requestCode = 1989 + index,
+                requestCode = System.currentTimeMillis().toInt(),
                 isTurnOf = true
             )
             //set turn of time
