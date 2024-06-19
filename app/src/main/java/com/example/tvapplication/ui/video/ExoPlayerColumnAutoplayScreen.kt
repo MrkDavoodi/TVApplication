@@ -2,21 +2,12 @@ package com.example.tvapplication.ui.video
 
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
@@ -25,17 +16,17 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.tvapplication.commons.HOLIDAY_CODE
-import com.example.tvapplication.commons.deleteLocalFileIfNotExistInVideosFromRemote
 import com.example.tvapplication.commons.getDayOfWeek
 import com.example.tvapplication.commons.internet.ConnectionState
 import com.example.tvapplication.commons.internet.connectivityState
 import com.example.tvapplication.commons.internet.downloadVideos
-import com.example.tvapplication.commons.mainService
 import com.example.tvapplication.commons.swapList
+import com.example.tvapplication.data.ApiURL
 import com.example.tvapplication.data.local.SharedPreferencesHelper
 import com.example.tvapplication.model.version.VsersionModel
 import com.example.tvapplication.model.video.VideoItem
@@ -51,22 +42,16 @@ import java.util.Calendar
 @Composable
 fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val listState = rememberLazyListState()
-    val exoPlayer = remember { ExoPlayer.Builder(context).build() }
     val versionDetails by viewModel.versionDetails
-    val videos by viewModel.videos.collectAsState(listOf())
-    val items = remember { mutableStateListOf<VideoItem>() }
+    val items = remember { mutableStateListOf<VideoItem>()}
 
-    var playingVideoItem by remember { mutableStateOf(items.firstOrNull()) }
-    var isPlaying by remember { mutableStateOf(true) }
+    val videos by viewModel.videos.collectAsStateWithLifecycle()
+    val videoList = mutableListOf<VideoItem?>(null)
     val connection by connectivityState()
     val isConnected = connection === ConnectionState.Available
-    val localList = viewModel.videosFromDB
-    if (localList.isNotEmpty()) {
-        items.swapList(localList)
+    viewModel.getLocalFiles()
+    items.swapList( viewModel.videosFromDB)
 
-    }
     if (isConnected) {
 //        mainService {
 //            viewModel.getVersion()
@@ -76,30 +61,29 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
         if (versionDetails != null) {
             val oldVersionWeb = SharedPreferencesHelper.getVersionNumber(context).toDouble()
             val newVersionWeb = versionDetails?.Ver?.toDouble()
-            SetSchedule(versionDetails, context)
+//            SetSchedule(versionDetails, context)
 
             if (newVersionWeb != null) {
-                if (localList.isEmpty() || oldVersionWeb < newVersionWeb || localList.size != videos.size) {
+                if (items.isEmpty() || oldVersionWeb < newVersionWeb || items.size != videos.size) {
                     SharedPreferencesHelper.saveVersionNumber(
                         context,
                         versionDetails?.Ver.toString()
                     )
-
-                    Toast.makeText(
-                        context,
-                        "" + SharedPreferencesHelper.getVersionNumber(context),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    if (localList.isEmpty())
-                        items.swapList(
-                            listOf(
-                                VideoItem(
-                                    id = videos[0].id,
-                                    mediaUrl = videos[0].mediaUrl,
-                                    thumbnail = ""
-                                )
-                            )
-                        )
+                    if (items.isEmpty()) {
+                            items.swapList(listOf( VideoItem(videos[0].id , videos[0].mediaUrl, "")))
+//                        LaunchedEffect(Unit) {
+//                            downloadVideos(
+//                                context = context,
+//                                fileName = videos[0].id + ".mp4",
+//                                downloadPath = videos[0].mediaUrl
+//                            ).let { file ->
+//                                if (file != null) {
+//                                    items.swapList(listOf(VideoItem(file.name, file.path, "")))
+////                                    localList.add(VideoItem(file.name, file.path, ""))
+//                                }
+//                            }
+//                        }
+                    }
 //                    if (localList.isNotEmpty() && localList.size != videos.size) {
 //                        localList.forEach { localItem ->
 //                            videos.forEach {
@@ -115,28 +99,22 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
 //
 //                    }
                     LaunchedEffect(Unit) {
-                        val downloadedFiles = mutableListOf<File?>()
+                        val downloadedFiles = mutableListOf<VideoItem>()
 
                         videos.forEach { video ->
-                            downloadVideos(
-                                context = context,
-                                fileName = video.id + ".mp4",
-                                downloadPath = video.mediaUrl
-                            ).let { file ->
-                                downloadedFiles.add(file)
-                            }
+                                downloadVideos(
+                                    context = context,
+                                    fileName = video.id + ".mp4",
+                                    downloadPath = video.mediaUrl
+                                ).let { file ->
+                                    if (file != null)
+                                        downloadedFiles.add(VideoItem(file.name.substringBefore("."), file.path, ""))
+                                }
 
                         }
-                        val listSwap: ArrayList<VideoItem> = arrayListOf()
-                        downloadedFiles.forEach {
-                            if (it != null) {
-                                listSwap.add(VideoItem(it.name, it.path, ""))
-                            }
-                        }
-//                        items.swapList(listSwap)
-
-                        viewModel.getListFiles()
-                        items.swapList(viewModel.videosFromDB)
+                        items.swapList(downloadedFiles)
+//                        viewModel.getLocalFiles()
+//                        items.value= viewModel.videosFromDB
                     }
                 }
             }
@@ -145,83 +123,11 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
 
     } else {
         NoConnectionScreen()
-
-
     }
 
-
-
-    LaunchedEffect(Unit) {
-        snapshotFlow {
-            listState.playingItem(items)
-        }.collect { videoItem ->
-            playingVideoItem = videoItem
-        }
-    }
-
-    LaunchedEffect(playingVideoItem) {
-        // is null only upon entering the screen
-        if (playingVideoItem == null) {
-            exoPlayer.pause()
-        } else {
-            for (i in items.indices) {
-                val songPath = items[i].mediaUrl
-                val item: MediaItem = MediaItem.fromUri(songPath)
-                exoPlayer.addMediaItem(item)
-            }
-            exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
-            exoPlayer.prepare()
-            exoPlayer.playWhenReady = true
-            exoPlayer.play()
-        }
-    }
-
-    DisposableEffect(exoPlayer) {
-        val lifecycleObserver = LifecycleEventObserver { _, event ->
-            if (playingVideoItem == null) return@LifecycleEventObserver
-            when (event) {
-                Lifecycle.Event.ON_START -> {
-//                    isPlaying = false
-                    exoPlayer.play()
-                }
-
-                Lifecycle.Event.ON_STOP -> exoPlayer.pause()
-                else -> {}
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
-            exoPlayer.release()
-        }
-    }
-
-    ScreenOfListVideo(listState, items, playingVideoItem, exoPlayer)
+    ExoPlayerAutoplayScreen(items)
 }
 
-@Composable
-private fun ScreenOfListVideo(
-    listState: LazyListState,
-    items: SnapshotStateList<VideoItem>,
-    playingVideoItem: VideoItem?,
-    exoPlayer: ExoPlayer
-) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
-        state = listState
-    ) {
-        items(items.size) { index ->
-            val playingVideo = playingVideoItem?.id
-            val newItem = items[index].id
-            AutoPlayVideoCard(
-                exoPlayer = exoPlayer,
-                isPlaying = items[index].id == playingVideoItem?.id,
-            )
-        }
-    }
-}
 
 @Composable
 private fun SetSchedule(
