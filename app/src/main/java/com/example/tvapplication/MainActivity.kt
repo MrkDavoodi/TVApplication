@@ -1,8 +1,11 @@
 package com.example.tvapplication
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -29,29 +33,90 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
+import com.example.tvapplication.commons.restartApp
+import com.example.tvapplication.data.ApiURL
+import com.example.tvapplication.data.local.SharedPreferencesHelper
+import com.example.tvapplication.data.local.SharedPreferencesHelper.Companion.BASE_URL_KEY
+import com.example.tvapplication.di.DynamicBaseUrlProvider
 import com.example.tvapplication.navigation.LocalNavigation
 import com.example.tvapplication.navigation.MainGraph
 import com.example.tvapplication.navigation.Navigation
+import com.example.tvapplication.ui.home.CustomDialog
 import com.example.tvapplication.ui.theme.TVApplicationTheme
 import com.example.tvapplication.ui.video.VideoViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var dynamicBaseUrlProvider: DynamicBaseUrlProvider
 
-//    companion object {
-//        init {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-//        }
-//    }
-private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<String>>
+    private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<String>>
+    val showDialog = mutableStateOf(false)
 
     private val inputKeys = arrayListOf<Int?>()
-    private val secretKey = listOf(
-        KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,
-        KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4
+
+    //    private val secretKey = listOf(
+//        KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,
+//        KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4
+//    )
+    val secretKey = listOf(
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_RIGHT
     )
+    val secretKeyExit = listOf(
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_LEFT
+    )
+    var validSecretKeyIndex = 0
+    var validSecretKeyExitIndex = 0
+
+    @SuppressLint("RestrictedApi")
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        super.dispatchKeyEvent(event)
+
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            Log.d("TV_KEY_DOWN_LOG", event.keyCode.toString() + ":" + validSecretKeyIndex)
+            handleSecretMenu(event)
+            handleSecretExit(event)
+
+        }
+        return false
+    }
+
+    private fun handleSecretMenu(event: KeyEvent) {
+        if (secretKey[validSecretKeyIndex] == event.keyCode) {
+            validSecretKeyIndex++
+        } else {
+            validSecretKeyIndex = 0
+        }
+        if (validSecretKeyIndex == secretKey.size) {
+            validSecretKeyIndex = 0
+            showDialog.value = true
+        }
+    }
+
+    private fun handleSecretExit(event: KeyEvent) {
+        if (secretKeyExit[validSecretKeyExitIndex] == event.keyCode) {
+            validSecretKeyExitIndex++
+        } else {
+            validSecretKeyExitIndex = 0
+        }
+        if (validSecretKeyExitIndex == secretKeyExit.size) {
+            validSecretKeyExitIndex = 0
+            finish()
+        }
+    }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         inputKeys.add(keyCode)
@@ -63,6 +128,7 @@ private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<Str
 
         return super.onKeyDown(keyCode, event)
     }
+
 
     @Deprecated(
         "Deprecated in Java",
@@ -82,9 +148,16 @@ private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<Str
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        dynamicBaseUrlProvider.setBaseUrl(
+            SharedPreferencesHelper(this).getDataFromSharPrf(
+                BASE_URL_KEY,
+                "https://mrk.co.ir/"
+            )
+        )
         requestMultiplePermission = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
-        ){
+        ) {
             var isGranted = false
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 it.forEach { (s, b) ->
@@ -92,7 +165,7 @@ private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<Str
                 }
             }
 
-            if (!isGranted){
+            if (!isGranted) {
                 Toast.makeText(this, "Permission Not Granted", Toast.LENGTH_SHORT).show()
             }
         }
@@ -105,6 +178,7 @@ private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<Str
                         shape = RectangleShape
                     ) {
                         val context = LocalContext.current
+                        hideSystemUI()
 
                         WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                         requestMultiplePermission.launch(
@@ -124,12 +198,19 @@ private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<Str
                         CompositionLocalProvider(LocalNavigation provides navigation) {
                             MainGraph(navController, this@MainActivity)
                         }
+                        if (showDialog.value)
+                            CustomDialog(value = "", setShowDialog = {
+                                showDialog.value = it
+                            }) {
+                                SharedPreferencesHelper(context).saveDataInSharPrf(BASE_URL_KEY, it)
+                                Log.i("HomePage", "HomePage : $it")
+                                restartApp(context)
+                            }
 
                     }
                 }
             }
         }
-        hideSystemUI()
     }
 
     private fun hideSystemUI() {

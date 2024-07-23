@@ -1,23 +1,33 @@
 package com.example.tvapplication.data.local
 
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.preference.PreferenceManager
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object SharedPreferencesHelper {
-    private const val PREFS_NAME = "myAppPrefs"
-    private const val VERSION_KEY = "version"
 
-    private fun getSharedPreferences(context: Context): SharedPreferences {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+@Singleton
+class SharedPreferencesHelper @Inject constructor(@ApplicationContext context: Context) {
+
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    fun saveDataInSharPrf( key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
     }
 
-    fun saveVersionNumber(context: Context, version: String) {
-        val prefs = getSharedPreferences(context)
-        prefs.edit().putString(VERSION_KEY, version).apply()
+    fun getDataFromSharPrf(key: String, default: String): String {
+        return prefs.getString(key, default).toString()
     }
 
-    fun getVersionNumber(context: Context): String {
-        val prefs = getSharedPreferences(context)
-        return prefs.getString(VERSION_KEY, "0").toString()
+    companion object {
+        const val PREFS_NAME = "myAppPrefs"
+        const val VERSION_KEY = "version"
+        const val BASE_URL_KEY = "base_url"
     }
 }

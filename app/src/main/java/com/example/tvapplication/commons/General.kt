@@ -1,6 +1,8 @@
 package com.example.tvapplication.commons
 
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
@@ -14,11 +16,13 @@ import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.tvapplication.MainActivity
 import com.example.tvapplication.admin.MyDeviceAdminReceiver
 import java.io.File
 import java.util.Calendar
+import kotlin.system.exitProcess
 
 
 private fun calculateSpanCount(activity: MainActivity): Int {
@@ -162,5 +166,18 @@ fun deleteLocalFileIfNotExistInVideosFromRemote(fileName: String) {
 
     }
 
+}
+ fun restartApp(applicationContext:Context) {
+    val intent = Intent(applicationContext, MainActivity::class.java)
+    val mPendingIntentId: Int = 1073
+    val mPendingIntent = PendingIntent.getActivity(
+        applicationContext,
+        mPendingIntentId,
+        intent,
+        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+    val mgr = applicationContext.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+    mgr[AlarmManager.RTC, System.currentTimeMillis() + 100] = mPendingIntent
+    exitProcess(0)
 }
 

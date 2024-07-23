@@ -6,27 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import com.example.tvapplication.commons.HOLIDAY_CODE
 import com.example.tvapplication.commons.getDayOfWeek
 import com.example.tvapplication.commons.internet.ConnectionState
 import com.example.tvapplication.commons.internet.connectivityState
 import com.example.tvapplication.commons.internet.downloadVideos
 import com.example.tvapplication.commons.swapList
-import com.example.tvapplication.data.ApiURL
 import com.example.tvapplication.data.local.SharedPreferencesHelper
 import com.example.tvapplication.model.version.VsersionModel
 import com.example.tvapplication.model.video.VideoItem
@@ -34,7 +23,6 @@ import com.example.tvapplication.time.setAlarm
 import com.example.tvapplication.ui.internet.NoConnectionScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import saman.zamani.persiandate.PersianDate
-import java.io.File
 import java.util.Calendar
 
 
@@ -43,14 +31,14 @@ import java.util.Calendar
 fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val versionDetails by viewModel.versionDetails
-    val items = remember { mutableStateListOf<VideoItem>()}
+    val items = remember { mutableStateListOf<VideoItem>() }
 
     val videos by viewModel.videos.collectAsStateWithLifecycle()
     val videoList = mutableListOf<VideoItem?>(null)
     val connection by connectivityState()
     val isConnected = connection === ConnectionState.Available
     viewModel.getLocalFiles()
-    items.swapList( viewModel.videosFromDB)
+    items.swapList(viewModel.videosFromDB)
 
     if (isConnected) {
 //        mainService {
@@ -59,18 +47,19 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
 //
 //        }
         if (versionDetails != null) {
-            val oldVersionWeb = SharedPreferencesHelper.getVersionNumber(context).toDouble()
+            val oldVersionWeb = SharedPreferencesHelper(context).getDataFromSharPrf(
+                SharedPreferencesHelper.VERSION_KEY, "0"
+            ).toDouble()
             val newVersionWeb = versionDetails?.Ver?.toDouble()
 //            SetSchedule(versionDetails, context)
 
             if (newVersionWeb != null) {
                 if (items.isEmpty() || oldVersionWeb < newVersionWeb || items.size != videos.size) {
-                    SharedPreferencesHelper.saveVersionNumber(
-                        context,
+                    SharedPreferencesHelper(context).saveDataInSharPrf( SharedPreferencesHelper.VERSION_KEY,
                         versionDetails?.Ver.toString()
                     )
                     if (items.isEmpty()) {
-                            items.swapList(listOf( VideoItem(videos[0].id , videos[0].mediaUrl, "")))
+                        items.swapList(listOf(VideoItem(videos[0].id, videos[0].mediaUrl, "")))
 //                        LaunchedEffect(Unit) {
 //                            downloadVideos(
 //                                context = context,
@@ -102,19 +91,25 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
                         val downloadedFiles = mutableListOf<VideoItem>()
 
                         videos.forEach { video ->
-                                downloadVideos(
-                                    context = context,
-                                    fileName = video.id + ".mp4",
-                                    downloadPath = video.mediaUrl
-                                ).let { file ->
-                                    if (file != null)
-                                        downloadedFiles.add(VideoItem(file.name.substringBefore("."), file.path, ""))
-                                }
+                            downloadVideos(
+                                context = context,
+                                fileName = video.id + ".mp4",
+                                downloadPath = video.mediaUrl
+                            ).let { file ->
+                                if (file != null)
+                                    downloadedFiles.add(
+                                        VideoItem(
+                                            file.name.substringBefore("."),
+                                            file.path,
+                                            ""
+                                        )
+                                    )
+                            }
 
                         }
-                        items.swapList(downloadedFiles)
-//                        viewModel.getLocalFiles()
-//                        items.value= viewModel.videosFromDB
+//                        items.swapList(downloadedFiles)
+                        viewModel.getLocalFiles()
+                        items.swapList(viewModel.videosFromDB)
                     }
                 }
             }

@@ -29,22 +29,24 @@ fun HomeScreen(
     viewModel: VideoViewModel = hiltViewModel(),
 ) {
     val versionDetails by viewModel.versionDetails
-//    if (versionDetails != null) {
-//        val videos by viewModel.videos.collectAsState(listOf())
-//
-//        val localList = remember { mutableStateListOf<VideoItem>() }
-//        localList.swapList(viewModel.videosFromDB)
-//        if (localList.isEmpty()) {
-//            LaunchedEffect(Unit) {
-//                downloadVideos(
-//                    context = context,
-//                    fileName = videos[0].id + ".mp4",
-//                    downloadPath = videos[0].mediaUrl
-//                )
-//            }
-//
-//        }
-//    }
+    val videos by viewModel.videos.collectAsState(listOf())
+    val localList = remember { mutableStateListOf<VideoItem>() }
+
+    if (versionDetails != null) {
+
+        localList.swapList(viewModel.videosFromDB)
+        if (localList.isEmpty()) {
+            LaunchedEffect(Unit) {
+                val fileDownloaded=downloadVideos(
+                    context = context,
+                    fileName = videos[0].id + ".mp4",
+                    downloadPath = videos[0].mediaUrl
+                )
+            }
+//            viewModel.getLocalFiles()
+
+        }
+    }
 
     Log.i("in Receiver", "test for command in Home")
     getPermission(context)
