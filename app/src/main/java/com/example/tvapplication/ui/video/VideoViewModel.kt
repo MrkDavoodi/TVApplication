@@ -85,10 +85,8 @@ class VideoViewModel @Inject constructor(
 
     }
 
-    fun getLocalFiles(context:Context){
+    fun getLocalFiles(){
         try {
-            var path2 = context.resources.assets
-
             val path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.toString()+"/Folder"
 //            val path="/storage/emulated/0/Download/Folder"
             val parentDir = File(path)
@@ -111,6 +109,24 @@ class VideoViewModel @Inject constructor(
         } catch (e: Exception) {
             Log.i("Exception Of File", e.message.toString())
 
+        }
+    }
+    fun fetchAssetFiles(context:Context){
+        val assetManager = context.assets
+        val fileList = assetManager.list("")
+        val filePath=assetManager.toString()
+
+        fileList?.forEach { file ->
+            val videoFile=VideoItem(id=file.substringBefore(".mp4"), mediaUrl = assetManager.toString(),"")
+            if (!_videosFromDB.contains(videoFile)){
+                _videosFromDB.add(
+                    VideoItem(
+                        id = file.substringBefore("."),
+                        mediaUrl = assetManager.toString(),
+                        thumbnail = ""
+                    )
+                )
+            }
         }
     }
 

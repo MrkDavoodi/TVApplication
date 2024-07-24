@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
         if (event.action == KeyEvent.ACTION_DOWN) {
             Log.d("TV_KEY_DOWN_LOG", event.keyCode.toString() + ":" + validSecretKeyIndex)
             handleSecretMenu(event)
-//            handleSecretExit(event)
+            handleSecretExit(event)
             return true
 
         }
@@ -120,16 +120,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        inputKeys.add(keyCode)
-        if (inputKeys == secretKey) {
-            finish()
-        } else {
-            return false
-        }
-
-        return super.onKeyDown(keyCode, event)
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        inputKeys.add(keyCode)
+//        if (inputKeys == secretKey) {
+//            finish()
+//        } else {
+//            return false
+//        }
+//
+//        return super.onKeyDown(keyCode, event)
+//    }
 
 
     @Deprecated(
@@ -185,6 +185,8 @@ class MainActivity : ComponentActivity() {
                         )
                         val videoListViewModel: VideoViewModel by viewModels()
                         val videos by videoListViewModel.videos.collectAsStateWithLifecycle()
+
+//                        videoListViewModel.fetchAssetFiles(context)
 
                         val navController = rememberNavController()
                         val navigation = remember {
