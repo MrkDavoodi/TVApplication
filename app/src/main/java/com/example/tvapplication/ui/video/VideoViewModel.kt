@@ -1,5 +1,6 @@
 package com.example.tvapplication.ui.video
 
+import android.content.Context
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -84,8 +85,10 @@ class VideoViewModel @Inject constructor(
 
     }
 
-    fun getLocalFiles(){
+    fun getLocalFiles(context:Context){
         try {
+            var path2 = context.resources.assets
+
             val path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.toString()+"/Folder"
 //            val path="/storage/emulated/0/Download/Folder"
             val parentDir = File(path)

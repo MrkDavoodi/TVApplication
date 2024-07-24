@@ -37,7 +37,7 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
     val videoList = mutableListOf<VideoItem?>(null)
     val connection by connectivityState()
     val isConnected = connection === ConnectionState.Available
-    viewModel.getLocalFiles()
+    viewModel.getLocalFiles(context = context)
     items.swapList(viewModel.videosFromDB)
 
     if (isConnected) {
@@ -108,7 +108,7 @@ fun ExoPlayerColumnAutoplayScreen(viewModel: VideoViewModel = hiltViewModel()) {
 
                         }
 //                        items.swapList(downloadedFiles)
-                        viewModel.getLocalFiles()
+                        viewModel.getLocalFiles(context = context)
                         items.swapList(viewModel.videosFromDB)
                     }
                 }

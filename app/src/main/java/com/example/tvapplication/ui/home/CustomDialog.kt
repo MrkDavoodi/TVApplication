@@ -1,6 +1,8 @@
 package com.example.tvapplication.ui.home
 
 import android.R
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.*
@@ -31,10 +34,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.tvapplication.commons.isValidUrl
+import com.example.tvapplication.commons.restartApp
+import com.example.tvapplication.data.local.SharedPreferencesHelper
 
 
 @Composable
-fun CustomDialog(value: String, setShowDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
+fun CustomDialog(
+    context: Context,
+    value: String,
+    setShowDialog: (Boolean) -> Unit,
+    setValue: (String) -> Unit
+) {
 
     val txtFieldError = remember { mutableStateOf("") }
     val txtField = remember { mutableStateOf(value) }
@@ -74,11 +85,38 @@ fun CustomDialog(value: String, setShowDialog: (Boolean) -> Unit, setValue: (Str
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Info,
+                            contentDescription = "",
+                            tint = colorResource(android.R.color.darker_gray),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                        )
+                        Text(
+                            text = "فرمت صحیح ورود url به این شکل بایستی باشد:\n " +
+                                    "http or https://your url.com/\n" +
+                                    "حتما در آخر مسیر / را قرار بدهید",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+
 
                     TextField(
                         modifier = Modifier
-                            .fillMaxWidth().
-                                background(color = Color.Transparent)
+                            .fillMaxWidth()
+                            .background(color = Color.Transparent)
                             .border(
                                 BorderStroke(
                                     width = 2.dp,
@@ -111,8 +149,20 @@ fun CustomDialog(value: String, setShowDialog: (Boolean) -> Unit, setValue: (Str
                                     txtFieldError.value = "این گزینه نمی تواند خالی باشد."
                                     return@Button
                                 }
-                                setValue(txtField.value)
-                                setShowDialog(false)
+                                if (txtField.value.isValidUrl()) {
+                                    setValue(txtField.value)
+                                    SharedPreferencesHelper(context).saveDataInSharPrf(
+                                        SharedPreferencesHelper.BASE_URL_KEY,
+                                        txtField.value
+                                    )
+                                    Toast.makeText(context, "راه اندازی مجدد", Toast.LENGTH_LONG)
+                                        .show()
+                                    setShowDialog(false)
+
+                                    restartApp(context)
+                                } else {
+                                    txtFieldError.value = "فرمت url را بدرستی وارد نمایید."
+                                }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

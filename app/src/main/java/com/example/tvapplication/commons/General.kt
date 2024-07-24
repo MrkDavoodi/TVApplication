@@ -15,12 +15,14 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.Patterns
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.tvapplication.MainActivity
 import com.example.tvapplication.admin.MyDeviceAdminReceiver
 import java.io.File
+import java.lang.System.exit
 import java.util.Calendar
 import kotlin.system.exitProcess
 
@@ -178,6 +180,10 @@ fun deleteLocalFileIfNotExistInVideosFromRemote(fileName: String) {
     )
     val mgr = applicationContext.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
     mgr[AlarmManager.RTC, System.currentTimeMillis() + 100] = mPendingIntent
-    exitProcess(0)
+     (applicationContext as Activity).finish()
+
+}
+fun String.isValidUrl(): Boolean {
+    return this.startsWith("http://") || this.startsWith("https://") && Patterns.WEB_URL.matcher(this).matches()
 }
 

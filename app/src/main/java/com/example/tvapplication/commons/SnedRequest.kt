@@ -1,13 +1,10 @@
 package com.example.tvapplication.commons
 
-import android.os.Handler
-import android.os.Looper
-import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
 
 
-fun mainService(sendRequest:()->Unit) {
+fun delayService(delay:Long, period:Long, sendRequest:()->Unit) {
 
 //
 //        val mainHandler = Handler(Looper.getMainLooper())
@@ -27,5 +24,5 @@ fun mainService(sendRequest:()->Unit) {
     }
 
 //     Schedule the task to run every 5 minutes (300,000 milliseconds)
-    timer.schedule(task, 0, 20000)
+    timer.schedule(task, delay, period)
 }

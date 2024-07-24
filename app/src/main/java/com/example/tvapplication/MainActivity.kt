@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowInsets
@@ -19,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,8 +33,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
+import com.example.tvapplication.commons.delayService
+import com.example.tvapplication.commons.isValidUrl
 import com.example.tvapplication.commons.restartApp
-import com.example.tvapplication.data.ApiURL
 import com.example.tvapplication.data.local.SharedPreferencesHelper
 import com.example.tvapplication.data.local.SharedPreferencesHelper.Companion.BASE_URL_KEY
 import com.example.tvapplication.di.DynamicBaseUrlProvider
@@ -45,7 +46,6 @@ import com.example.tvapplication.ui.home.CustomDialog
 import com.example.tvapplication.ui.theme.TVApplicationTheme
 import com.example.tvapplication.ui.video.VideoViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
@@ -56,6 +56,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var requestMultiplePermission: ActivityResultLauncher<Array<String>>
     val showDialog = mutableStateOf(false)
+    val resetApp = mutableStateOf(false)
 
     private val inputKeys = arrayListOf<Int?>()
 
@@ -88,7 +89,8 @@ class MainActivity : ComponentActivity() {
         if (event.action == KeyEvent.ACTION_DOWN) {
             Log.d("TV_KEY_DOWN_LOG", event.keyCode.toString() + ":" + validSecretKeyIndex)
             handleSecretMenu(event)
-            handleSecretExit(event)
+//            handleSecretExit(event)
+            return true
 
         }
         return false
@@ -149,12 +151,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        dynamicBaseUrlProvider.setBaseUrl(
-            SharedPreferencesHelper(this).getDataFromSharPrf(
-                BASE_URL_KEY,
-                "https://mrk.co.ir/"
-            )
-        )
         requestMultiplePermission = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) {
@@ -199,12 +195,10 @@ class MainActivity : ComponentActivity() {
                             MainGraph(navController, this@MainActivity)
                         }
                         if (showDialog.value)
-                            CustomDialog(value = "", setShowDialog = {
+                            CustomDialog(context=context,value = "", setShowDialog = {
                                 showDialog.value = it
                             }) {
-                                SharedPreferencesHelper(context).saveDataInSharPrf(BASE_URL_KEY, it)
-                                Log.i("HomePage", "HomePage : $it")
-                                restartApp(context)
+
                             }
 
                     }
